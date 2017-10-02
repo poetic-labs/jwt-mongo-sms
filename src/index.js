@@ -1,1 +1,4 @@
-export { default } from './JwtMongoSms';
+import 'babel-polyfill';
+import JwtMongoSms from './JwtMongoSms';
+
+export default JwtMongoSms;
