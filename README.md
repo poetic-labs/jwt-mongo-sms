@@ -121,7 +121,7 @@ getMiddleware() : express.Handler[]
 sendLoginCode(phoneNumber: string) : Promise<void>
 ```
 
-* Sends login code via Twilio SMS. Upserts auth collection document for `phoneNumber` with new `loginCode` and `loginCreatedAt`. By default `JwtMongoSms` uses the same collection for user data as it does for auth data. That means this method will create your user document for you if it doesn't already exist. To avoid this behavior, be sure to create your user document beforehand.
+* Sends login code via Twilio SMS. Upserts auth collection document for `phoneNumber` with new `loginCode` and `loginCreatedAt`. NOTE: By default `userCollectionName` and `authCollectionName` are both set to `users`. That means if you don't override these settings, this method will insert a user document for you (if it doesn't already exist). To avoid this behavior, be sure to create the user document beforehand.
 
 ```
 verifyLoginCode({ phoneNumber: string, loginCode: string }) : Promise<{ user: Object, authToken: string }>
