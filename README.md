@@ -1,13 +1,15 @@
 # jwt-mongo-sms
 
-If you were wondering how to implement Node authentication with JSON web tokens, Mongo DB, Twilio SMS, and (optionally) GraphQL, you're in the right place!
+If you're wondering how to implement authentication with JSON web tokens, Mongo DB, Twilio SMS, and (optionally) GraphQL, you're in the right place!
 
 ## Installation
 
 ```
 npm install jwt-mongo-sms
 ```
+
 or
+
 ```
 yarn add jwt-mongo-sms
 ```
@@ -48,6 +50,8 @@ const server = express();
 
 server.use(jwtMongoSms.getMiddleware());
 ```
+
+With the middleware you can check `request.user` in each request to determine which user (if any) has been authenticated!
 
 ## GraphQL usage
 
@@ -110,14 +114,17 @@ There are three methods from the `JwtMongoSms` class you should use:
 ```
 getMiddleware() : express.Handler[]
 ```
+
 * Returns the middleware needed for authenticating server requests.
 
 ```
 sendLoginCode(phoneNumber: string) : Promise<void>
 ```
+
 * Sends login code via Twilio SMS. Upserts auth collection document for `phoneNumber` with new `loginCode` and `loginCreatedAt`. By default `JwtMongoSms` uses the same collection for user data as it does for auth data. That means this method will create your user document for you if it doesn't already exist. To avoid this behavior, be sure to create your user document beforehand.
 
 ```
 verifyLoginCode({ phoneNumber: string, loginCode: string }) : Promise<{ user: Object, authToken: string }>
 ```
+
 * Verifies inputted login code. Will throw errors if no user data is found, no auth data is found, no login code has been generated, the compared codes do not match, or if the login code has expired. When verified, the `user` document and a generated `authToken` are returned.
