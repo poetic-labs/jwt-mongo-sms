@@ -1,15 +1,15 @@
 {
   "name": "jwt-mongo-sms",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Authentication using JSON web tokens, Mongo DB, and Twilio SMS",
   "license": "ISC",
   "author": "Poetic Systems",
   "contributors": [
     "Evan Corl <evan@poeticsystems.com>"
   ],
-  "repository" : {
-    "type" : "git",
-    "url" : "https://github.com/poetic-labs/jwt-mongo-sms"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/poetic-labs/jwt-mongo-sms"
   },
   "keywords": [
     "auth",
