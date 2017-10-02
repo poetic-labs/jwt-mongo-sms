@@ -35,7 +35,7 @@ class JwtMongoSms {
 
     usePassportStrategy({
       jwtSecret,
-      getUsersCollection: this.getUsersCollection,
+      getUsersCollection: () => this.getUsersCollection(),
     });
   }
 
@@ -63,7 +63,7 @@ class JwtMongoSms {
     return sendLoginCode({
       phoneNumber,
       setMessage: this.setSmsMessage,
-      getAuthCollection: this.getAuthCollection,
+      getAuthCollection: () => this.getAuthCollection(),
       twilioClient: this.twilioClient,
       twilioPhoneNumber: this.twilioPhoneNumber,
     });
@@ -73,8 +73,8 @@ class JwtMongoSms {
     return verifyLoginCode({
       loginCode,
       phoneNumber,
-      getUsersCollection: this.getUsersCollection,
-      getAuthCollection: this.getAuthCollection,
+      getUsersCollection: () => this.getUsersCollection(),
+      getAuthCollection: () => this.getAuthCollection(),
       loginCodeTimeoutSeconds: this.loginCodeTimeoutSeconds,
       jwtSecret: this.jwtSecret,
     });
