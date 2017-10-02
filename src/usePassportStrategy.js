@@ -14,7 +14,8 @@ const usePassportStrategy = ({ jwtSecret, getUsersCollection }) => {
         if (jwtPayload) {
           const usersCollection = await getUsersCollection();
 
-          user = await usersCollection.findOne({ _id: jwtPayload.id });
+          // eslint-disable-next-line no-underscore-dangle
+          user = await usersCollection.findOne({ _id: jwtPayload._id });
         }
 
         done(null, user || false);
