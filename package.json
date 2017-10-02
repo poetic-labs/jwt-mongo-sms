@@ -22,8 +22,9 @@
   ],
   "main": "build/index.js",
   "scripts": {
+    "lint": "eslint . --ext .js",
     "build": "babel src --out-dir build",
-    "lint": "eslint . --ext .js"
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "babel-polyfill": "^6.26.0",
