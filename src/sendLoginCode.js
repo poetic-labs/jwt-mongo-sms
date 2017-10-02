@@ -15,9 +15,11 @@ const sendLoginCode = async ({
   const authCollection = await getAuthCollection();
 
   await authCollection.findOneAndUpdate({ phoneNumber }, {
-    phoneNumber,
-    loginCode,
-    loginCreatedAt: moment().utc().toDate(),
+    $set: {
+      phoneNumber,
+      loginCode,
+      loginCreatedAt: moment().utc().toDate(),
+    },
   }, {
     upsert: true,
   });
