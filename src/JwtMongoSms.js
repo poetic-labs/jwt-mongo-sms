@@ -62,6 +62,7 @@ class JwtMongoSms {
   async sendLoginCode(phoneNumber) {
     return sendLoginCode({
       phoneNumber,
+      loginCodeLength: this.loginCodeLength,
       setMessage: this.setSmsMessage,
       getAuthCollection: () => this.getAuthCollection(),
       twilioClient: this.twilioClient,

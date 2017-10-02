@@ -3,12 +3,13 @@ import generateLoginCode from './generateLoginCode';
 
 const sendLoginCode = async ({
   phoneNumber,
+  loginCodeLength,
   setMessage,
   getAuthCollection,
   twilioClient,
   twilioPhoneNumber,
 }) => {
-  const loginCode = generateLoginCode();
+  const loginCode = generateLoginCode(loginCodeLength);
   const message = setMessage(loginCode);
 
   const authCollection = await getAuthCollection();
