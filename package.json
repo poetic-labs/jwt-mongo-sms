@@ -16,9 +16,15 @@
     "authentication",
     "login",
     "jwt",
+    "json",
+    "web",
+    "token",
     "mongo",
     "sms",
-    "twilio"
+    "twilio",
+    "passport",
+    "graphql",
+    "phone"
   ],
   "main": "build/index.js",
   "scripts": {
