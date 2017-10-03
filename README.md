@@ -16,6 +16,8 @@ yarn add jwt-mongo-sms
 
 ## Quickstart
 
+(Before doing anything with this package, you'll need a [Mongo](https://www.mongodb.com/) database and a [Twilio](https://www.twilio.com/) account with a phone number to use for SMS.)
+
 Create an instance of `JwtMongoSms`:
 ```javascript
 import JwtMongoSms from 'jwt-mongo-sms';
@@ -99,7 +101,7 @@ Field|Default Value|Description
 ---|---|---
 jwtSecret||JSON web token [secret](https://jwt.io/introduction/)
 mongoUri||Mongo URI (e.g., `mongodb://localhost/my-db`)
-twilio|`{}`|Twilio credentials (`accountSid`, `authToken`) and `phoneNumber` used to send SMS text
+twilio|`{}`|[Twilio](https://www.twilio.com/) credentials (`accountSid`, `authToken`) and `phoneNumber` used to send SMS text
 setSmsMessage|```(code => `Your login code is ${code}`)```|Function used to set the SMS message for login
 usersCollectionName|users|Name of the Mongo collection used to store user data
 authCollectionName|users|Name of the Mongo collection used to store auth data
