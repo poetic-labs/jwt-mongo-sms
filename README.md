@@ -72,7 +72,7 @@ const verifyLoginCode = async (obj, { phoneNumber, loginCode }) => {
 };
 ```
 
-Sample auth token storage on client:
+Sample auth token storage on client with [Apollo](https://www.npmjs.com/package/apollo-client):
 ```javascript
 apolloClient.mutate({
   mutation: gql`
@@ -92,7 +92,7 @@ apolloClient.mutate({
   })
 ```
 
-Sample [Apollo](https://www.npmjs.com/package/apollo-client) middleware that makes authorized requests:
+Sample Apollo middleware that makes authorized requests:
 ```javascript
 networkInterface.use([{
   applyMiddleware(request, next) {
