@@ -53,7 +53,7 @@ const server = express();
 server.use(jwtMongoSms.getMiddleware());
 ```
 
-With the middleware you can check `request.user` in each request to determine which user (if any) has been authenticated!
+With the middleware you can check `request.user` in each request to determine which user (if any) has been authenticated! NOTE: You will need to store the JWT on the client using `localStorage`, cookies, or another method, and send it via the request `Authorization` header. See the GraphQL samples below.
 
 ## GraphQL usage
 
@@ -70,6 +70,45 @@ const verifyLoginCode = async (obj, { phoneNumber, loginCode }) => {
 
   return { user, authToken };
 };
+```
+
+Sample auth token storage on client:
+```javascript
+apolloClient.mutate({
+  mutation: gql`
+    mutation verifyLoginCode($phoneNumber: String!, $loginCode: String!) {
+      verifyLoginCode(phoneNumber: $phoneNumber, loginCode: $loginCode) {
+        authToken
+      }
+    }
+  `,
+  variables: {
+    phoneNumber: '+15555555555',
+    loginCode: '1234',
+  },
+})
+  .then(({ data }) => {
+    localStorage.setItem('authToken', data.verifyLoginCode.authToken);
+  })
+```
+
+Sample [Apollo](https://www.npmjs.com/package/apollo-client) middleware that makes authorized requests:
+```javascript
+networkInterface.use([{
+  applyMiddleware(request, next) {
+    const authToken = localStorage.getItem('authToken');
+
+    if (!request.options.headers) {
+      request.options.headers = {};
+    }
+
+    if (authToken) {
+      request.options.headers.authorization = `JWT ${authToken}`;
+    }
+
+    next();
+  },
+}]);
 ```
 
 Setting context for resolvers that require authentication:
