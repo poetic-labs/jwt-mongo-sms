@@ -168,4 +168,4 @@ sendLoginCode(phoneNumber: string) : Promise<void>
 verifyLoginCode({ phoneNumber: string, loginCode: string }) : Promise<{ user: Object, authToken: string }>
 ```
 
-* Verifies inputted login code. Will throw errors if no user data is found, no auth data is found, no login code has been generated, the compared codes do not match, or if the login code has expired. When verified, the `user` document and a generated `authToken` are returned.
+* Verifies inputted login code. Will throw errors if no auth data is found, no login code has been generated, the compared codes do not match, or if the login code has expired. When verified, the found `user` document and a generated `authToken` are returned.

@@ -15,10 +15,6 @@ const verifyLoginCode = async ({
   const user = await usersCollection.findOne({ phoneNumber });
   const auth = await authCollection.findOne({ phoneNumber });
 
-  if (!user) {
-    throw new Error(`No user information found for ${phoneNumber}`);
-  }
-
   if (!auth) {
     throw new Error(`No auth information found for ${phoneNumber}`);
   }
