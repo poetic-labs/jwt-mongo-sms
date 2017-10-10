@@ -69,6 +69,18 @@ class JwtMongoSms {
     return this.getMongoCollection(this.usersCollectionName);
   }
 
+  async createAuthIndex(fieldOrSpec = 'phoneNumber', options = { unique: true }) {
+    const authCollection = await this.getAuthCollection();
+
+    authCollection.createIndex(fieldOrSpec, options);
+  }
+
+  async createUsersIndex(fieldOrSpec = 'phoneNumber', options = { unique: true }) {
+    const usersCollection = await this.getUsersCollection();
+
+    usersCollection.createIndex(fieldOrSpec, options);
+  }
+
   async sendLoginCodeViaSms(phoneNumber) {
     return sendLoginCodeViaSms({
       phoneNumber,
