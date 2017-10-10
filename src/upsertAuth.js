@@ -11,7 +11,7 @@ const upsertAuth = async ({
     $set: {
       phoneNumber,
       loginCode,
-      loginCreatedAt: moment().utc().toDate(),
+      loginCodeCreatedAt: moment().utc().toDate(),
     },
   }, {
     upsert: true,

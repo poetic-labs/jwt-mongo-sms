@@ -27,7 +27,7 @@ const verifyLoginCode = async ({
     throw new Error('Code does not match');
   }
 
-  if (moment().diff(moment(auth.loginCreatedAt), 'seconds') >= loginCodeTimeoutSeconds) {
+  if (moment().diff(moment(auth.loginCodeCreatedAt), 'seconds') >= loginCodeTimeoutSeconds) {
     throw new Error('Code has expired');
   }
 
