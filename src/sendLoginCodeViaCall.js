@@ -4,10 +4,10 @@ import upsertAuth from './upsertAuth';
 const sendLoginCodeViaCall = async ({
   phoneNumber,
   loginCodeLength,
-  callUrl,
   getAuthCollection,
   twilioClient,
   twilioPhoneNumber,
+  callUrl,
 }) => {
   const loginCode = generateLoginCode(loginCodeLength);
 
