@@ -2,6 +2,8 @@
 
 If you're wondering how to implement authentication with JSON web tokens, Mongo DB, Twilio SMS, and (optionally) GraphQL, you're in the right place!
 
+NOTE: This package is new and continually changing. Be sure to check the docs before upgrading to a new version.
+
 ## Installation
 
 ```
@@ -53,20 +55,22 @@ const server = express();
 server.use(jwtMongoSms.getAuthMiddleware());
 ```
 
-With the middleware you can check `request.user` in each request to determine which user (if any) has been authenticated! NOTE: You will need to store the JWT on the client using `localStorage`, cookies, or another method, and send it via the request `Authorization` header. See the GraphQL samples below.
+With the middleware you can check `request.user` in each request to determine which user (if any) has been authenticated!
+
+You will need to store the JWT on the client using `localStorage`, cookies, or another method, and send it via the request `Authorization` header. See the GraphQL samples below.
 
 ## GraphQL usage
 
 Sample login resolvers:
 ```javascript
-const sendLoginCode = async (obj, { phoneNumber }) => {
-  await jwtMongoSms.sendLoginCode(phoneNumber);
+const sendAuthCode = async (obj, { phoneNumber }) => {
+  await jwtMongoSms.sendAuthCode(phoneNumber);
 
   return true;
 };
 
-const verifyLoginCode = async (obj, { phoneNumber, loginCode }) => {
-  const { user, authToken } = await jwtMongoSms.verifyLoginCode({ phoneNumber, loginCode });
+const verifyAuthCode = async (obj, { phoneNumber, authCode }) => {
+  const { user, authToken } = await jwtMongoSms.verifyAuthCode({ phoneNumber, authCode });
 
   return { user, authToken };
 };
@@ -76,19 +80,19 @@ Sample auth token storage on client with [Apollo](https://www.npmjs.com/package/
 ```javascript
 apolloClient.mutate({
   mutation: gql`
-    mutation verifyLoginCode($phoneNumber: String!, $loginCode: String!) {
-      verifyLoginCode(phoneNumber: $phoneNumber, loginCode: $loginCode) {
+    mutation verifyAuthCode($phoneNumber: String!, $authCode: String!) {
+      verifyAuthCode(phoneNumber: $phoneNumber, authCode: $authCode) {
         authToken
       }
     }
   `,
   variables: {
     phoneNumber: '+15555555555',
-    loginCode: '1234',
+    authCode: '1234',
   },
 })
   .then(({ data }) => {
-    localStorage.setItem('authToken', data.verifyLoginCode.authToken);
+    localStorage.setItem('authToken', data.verifyAuthCode.authToken);
   })
 ```
 
@@ -141,12 +145,12 @@ Field|Default Value|Description
 jwtSecret||JSON web token [secret](https://jwt.io/introduction/)
 mongoUri||[Mongo](https://www.mongodb.com/) URI (e.g., `mongodb://localhost/my-db`)
 twilio|`{}`|[Twilio](https://www.twilio.com/) credentials (`accountSid`, `authToken`) and `phoneNumber` used to send SMS text
-setSmsMessage|```(code => `Your login code is ${code}`)```|Function used to set the SMS message for login
+setSmsMessage|```(code => `Your authentication code is ${code}`)```|Function used to set the message for SMS authentication
 usersCollectionName|users|Name of the Mongo collection used to store user data
 authCollectionName|users|Name of the Mongo collection used to store auth data
 requestKey|user|Key your authenticated user will be assigned to on each server `request`
-loginCodeLength|4|Length of login code
-loginCodeTimeoutSeconds|600|Number of seconds it takes for a login code to expire
+authCodeLength|4|Length of authentication code
+authCodeTimeoutSeconds|600|Number of seconds it takes for a authentication code to expire
 
 ## API
 
@@ -159,13 +163,13 @@ getAuthMiddleware() : express.Handler[]
 * Returns the middleware needed for authenticating server requests.
 
 ```
-sendLoginCode(phoneNumber: string) : Promise<void>
+sendAuthCode(phoneNumber: string) : Promise<void>
 ```
 
-* Sends login code via Twilio SMS. Upserts auth collection document for `phoneNumber` with new `loginCode` and `loginCodeCreatedAt`. NOTE: By default `userCollectionName` and `authCollectionName` are both set to `users`. That means if you don't override these settings, this method will insert a user document for you (if it doesn't already exist). To avoid this behavior, be sure to create the user document beforehand.
+* Sends authentication code via Twilio SMS. Upserts auth collection document for `phoneNumber` with new `authCode` and `authCodeCreatedAt`. NOTE: By default `userCollectionName` and `authCollectionName` are both set to `users`. That means if you don't override these settings, this method will insert a user document for you (if it doesn't already exist). To avoid this behavior, be sure to create the user document beforehand.
 
 ```
-verifyLoginCode({ phoneNumber: string, loginCode: string }) : Promise<{ user: Object, authToken: string }>
+verifyAuthCode({ phoneNumber: string, authCode: string }) : Promise<{ user: Object, authToken: string }>
 ```
 
-* Verifies inputted login code. Will throw errors if no auth data is found, no login code has been generated, the compared codes do not match, or if the login code has expired. When verified, the found `user` document and a generated `authToken` are returned.
+* Verifies inputted authentication code. Will throw errors if no auth data is found, no code has been generated, the compared codes do not match, or if the code has expired. When verified, the found `user` document and a generated `authToken` are returned.
