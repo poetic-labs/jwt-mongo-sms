@@ -1,20 +1,20 @@
-import generateLoginCode from './generateLoginCode';
+import generateAuthCode from './generateAuthCode';
 import upsertAuth from './upsertAuth';
 
-const sendLoginCodeViaSms = async ({
+const sendAuthCodeViaSms = async ({
   phoneNumber,
-  loginCodeLength,
+  authCodeLength,
   setMessage,
   getAuthCollection,
   twilioClient,
   twilioPhoneNumber,
 }) => {
-  const loginCode = generateLoginCode(loginCodeLength);
-  const message = setMessage(loginCode);
+  const code = generateAuthCode(authCodeLength);
+  const message = setMessage(code);
 
   await upsertAuth({
     phoneNumber,
-    loginCode,
+    code,
     getAuthCollection,
   });
 
@@ -25,4 +25,4 @@ const sendLoginCodeViaSms = async ({
   });
 };
 
-export default sendLoginCodeViaSms;
+export default sendAuthCodeViaSms;

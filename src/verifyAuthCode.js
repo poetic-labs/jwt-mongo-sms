@@ -1,12 +1,12 @@
 import jwt from 'jwt-simple';
 import moment from 'moment';
 
-const verifyLoginCode = async ({
+const verifyAuthCode = async ({
   phoneNumber,
-  loginCode,
+  authCode,
   getUsersCollection,
   getAuthCollection,
-  loginCodeTimeoutSeconds,
+  authCodeTimeoutSeconds,
   jwtSecret,
 }) => {
   const usersCollection = await getUsersCollection();
@@ -16,18 +16,18 @@ const verifyLoginCode = async ({
   const auth = await authCollection.findOne({ phoneNumber });
 
   if (!auth) {
-    throw new Error(`No auth information found for ${phoneNumber}`);
+    throw new Error(`No authentication info found for ${phoneNumber}`);
   }
 
-  if (!auth.loginCode) {
+  if (!auth.code) {
     throw new Error(`No code has been generated for ${phoneNumber}`);
   }
 
-  if (auth.loginCode !== loginCode) {
+  if (auth.code !== authCode) {
     throw new Error('Code does not match');
   }
 
-  if (moment().diff(moment(auth.loginCodeCreatedAt), 'seconds') >= loginCodeTimeoutSeconds) {
+  if (moment().diff(moment(auth.codeCreatedAt), 'seconds') >= authCodeTimeoutSeconds) {
     throw new Error('Code has expired');
   }
 
@@ -37,4 +37,4 @@ const verifyLoginCode = async ({
   return { user, authToken };
 };
 
-export default verifyLoginCode;
+export default verifyAuthCode;

@@ -2,7 +2,7 @@ import moment from 'moment';
 
 const upsertAuth = async ({
   phoneNumber,
-  loginCode,
+  code,
   getAuthCollection,
 }) => {
   const authCollection = await getAuthCollection();
@@ -10,8 +10,8 @@ const upsertAuth = async ({
   await authCollection.findOneAndUpdate({ phoneNumber }, {
     $set: {
       phoneNumber,
-      loginCode,
-      loginCodeCreatedAt: moment().utc().toDate(),
+      code,
+      codeCreatedAt: moment().utc().toDate(),
     },
   }, {
     upsert: true,

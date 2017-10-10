@@ -1,10 +1,10 @@
 import { MongoClient } from 'mongodb';
 import Twilio from 'twilio';
 import getAuthMiddleware from './getAuthMiddleware';
-import sendLoginCodeViaCall from './sendLoginCodeViaCall';
-import sendLoginCodeViaSms from './sendLoginCodeViaSms';
+import sendAuthCodeViaCall from './sendAuthCodeViaCall';
+import sendAuthCodeViaSms from './sendAuthCodeViaSms';
 import usePassportStrategy from './usePassportStrategy';
-import verifyLoginCode from './verifyLoginCode';
+import verifyAuthCode from './verifyAuthCode';
 
 class JwtMongoSms {
   constructor({
@@ -16,12 +16,12 @@ class JwtMongoSms {
       authToken: undefined,
     },
     callUrl,
-    setSmsMessage = (code => `Your login code is ${code}`),
+    setSmsMessage = (code => `Your authentication code is ${code}`),
     usersCollectionName = 'users',
     authCollectionName = 'users',
     requestKey = 'user',
-    loginCodeLength = 4,
-    loginCodeTimeoutSeconds = (60 * 10),
+    authCodeLength = 4,
+    authCodeTimeoutSeconds = (60 * 10),
   }) {
     this.jwtSecret = jwtSecret;
     this.mongoUri = mongoUri;
@@ -33,8 +33,8 @@ class JwtMongoSms {
     this.usersCollectionName = usersCollectionName;
     this.authCollectionName = authCollectionName;
     this.requestKey = requestKey;
-    this.loginCodeLength = loginCodeLength;
-    this.loginCodeTimeoutSeconds = loginCodeTimeoutSeconds;
+    this.authCodeLength = authCodeLength;
+    this.authCodeTimeoutSeconds = authCodeTimeoutSeconds;
 
     usePassportStrategy({
       jwtSecret,
@@ -44,13 +44,6 @@ class JwtMongoSms {
 
   getAuthMiddleware() {
     return getAuthMiddleware(this.requestKey);
-  }
-
-  getMiddleware() {
-    // eslint-disable-next-line no-console
-    console.warn('"getMiddleware" is deprecated. Please use "getAuthMiddleware" instead.');
-
-    return this.getAuthMiddleware();
   }
 
   async getMongoCollection(name) {
@@ -81,10 +74,10 @@ class JwtMongoSms {
     usersCollection.createIndex(fieldOrSpec, options);
   }
 
-  async sendLoginCodeViaSms(phoneNumber) {
-    return sendLoginCodeViaSms({
+  async sendAuthCodeViaSms(phoneNumber) {
+    return sendAuthCodeViaSms({
       phoneNumber,
-      loginCodeLength: this.loginCodeLength,
+      authCodeLength: this.authCodeLength,
       setMessage: this.setSmsMessage,
       getAuthCollection: () => this.getAuthCollection(),
       twilioClient: this.twilioClient,
@@ -92,15 +85,15 @@ class JwtMongoSms {
     });
   }
 
-  // Alias for "sendLoginCodeViaSms"
-  async sendLoginCode(phoneNumber) {
-    return this.sendLoginCodeViaSms(phoneNumber);
+  // Alias for "sendAuthCodeViaSms"
+  async sendAuthCode(phoneNumber) {
+    return this.sendAuthCodeViaSms(phoneNumber);
   }
 
-  async sendLoginCodeViaCall(phoneNumber) {
-    return sendLoginCodeViaCall({
+  async sendAuthCodeViaCall(phoneNumber) {
+    return sendAuthCodeViaCall({
       phoneNumber,
-      loginCodeLength: this.loginCodeLength,
+      authCodeLength: this.authCodeLength,
       getAuthCollection: () => this.getAuthCollection(),
       twilioClient: this.twilioClient,
       twilioPhoneNumber: this.twilioPhoneNumber,
@@ -108,13 +101,13 @@ class JwtMongoSms {
     });
   }
 
-  async verifyLoginCode({ loginCode, phoneNumber }) {
-    return verifyLoginCode({
-      loginCode,
+  async verifyAuthCode({ authCode, phoneNumber }) {
+    return verifyAuthCode({
+      authCode,
       phoneNumber,
       getUsersCollection: () => this.getUsersCollection(),
       getAuthCollection: () => this.getAuthCollection(),
-      loginCodeTimeoutSeconds: this.loginCodeTimeoutSeconds,
+      authCodeTimeoutSeconds: this.authCodeTimeoutSeconds,
       jwtSecret: this.jwtSecret,
     });
   }

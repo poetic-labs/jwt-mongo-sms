@@ -1,27 +1,27 @@
-import generateLoginCode from './generateLoginCode';
+import generateAuthCode from './generateAuthCode';
 import upsertAuth from './upsertAuth';
 
-const sendLoginCodeViaCall = async ({
+const sendAuthCodeViaCall = async ({
   phoneNumber,
-  loginCodeLength,
+  authCodeLength,
   getAuthCollection,
   twilioClient,
   twilioPhoneNumber,
   callUrl,
 }) => {
-  const loginCode = generateLoginCode(loginCodeLength);
+  const code = generateAuthCode(authCodeLength);
 
   await upsertAuth({
     phoneNumber,
-    loginCode,
+    code,
     getAuthCollection,
   });
 
   await twilioClient.calls.create({
     to: phoneNumber,
     from: twilioPhoneNumber,
-    url: `${callUrl}/?loginCode=${loginCode}`,
+    url: `${callUrl}/?authCode=${code}`,
   });
 };
 
-export default sendLoginCodeViaCall;
+export default sendAuthCodeViaCall;
