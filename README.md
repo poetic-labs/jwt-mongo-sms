@@ -50,7 +50,7 @@ import jwtMongoSms from './jwtMongoSms';
 
 const server = express();
 
-server.use(jwtMongoSms.getMiddleware());
+server.use(jwtMongoSms.getAuthMiddleware());
 ```
 
 With the middleware you can check `request.user` in each request to determine which user (if any) has been authenticated! NOTE: You will need to store the JWT on the client using `localStorage`, cookies, or another method, and send it via the request `Authorization` header. See the GraphQL samples below.
@@ -153,7 +153,7 @@ loginCodeTimeoutSeconds|600|Number of seconds it takes for a login code to expir
 There are three methods from the `JwtMongoSms` class you should use:
 
 ```
-getMiddleware() : express.Handler[]
+getAuthMiddleware() : express.Handler[]
 ```
 
 * Returns the middleware needed for authenticating server requests.
