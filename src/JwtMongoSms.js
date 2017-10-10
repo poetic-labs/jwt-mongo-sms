@@ -1,7 +1,8 @@
 import { MongoClient } from 'mongodb';
 import Twilio from 'twilio';
 import getMiddleware from './getMiddleware';
-import sendLoginCode from './sendLoginCode';
+import sendLoginCodeViaCall from './sendLoginCodeViaCall';
+import sendLoginCodeViaSms from './sendLoginCodeViaSms';
 import usePassportStrategy from './usePassportStrategy';
 import verifyLoginCode from './verifyLoginCode';
 
@@ -14,6 +15,7 @@ class JwtMongoSms {
       accountSid: undefined,
       authToken: undefined,
     },
+    callUrl,
     setSmsMessage = (code => `Your login code is ${code}`),
     usersCollectionName = 'users',
     authCollectionName = 'users',
@@ -25,18 +27,23 @@ class JwtMongoSms {
     this.mongoUri = mongoUri;
     this.twilioPhoneNumber = twilio.phoneNumber;
     this.twilioClient = new Twilio(twilio.accountSid, twilio.authToken);
-    this.setSmsMessage = setSmsMessage;
+    this.callUrl = callUrl;
 
+    this.setSmsMessage = setSmsMessage;
     this.usersCollectionName = usersCollectionName;
     this.authCollectionName = authCollectionName;
+    this.requestKey = requestKey;
     this.loginCodeLength = loginCodeLength;
     this.loginCodeTimeoutSeconds = loginCodeTimeoutSeconds;
-    this.requestKey = requestKey;
 
     usePassportStrategy({
       jwtSecret,
       getUsersCollection: () => this.getUsersCollection(),
     });
+  }
+
+  getMiddleware() {
+    return getMiddleware(this.requestKey);
   }
 
   async getMongoCollection(name) {
@@ -55,18 +62,30 @@ class JwtMongoSms {
     return this.getMongoCollection(this.usersCollectionName);
   }
 
-  getMiddleware() {
-    return getMiddleware(this.requestKey);
-  }
-
-  async sendLoginCode(phoneNumber) {
-    return sendLoginCode({
+  async sendLoginCodeViaSms(phoneNumber) {
+    return sendLoginCodeViaSms({
       phoneNumber,
       loginCodeLength: this.loginCodeLength,
       setMessage: this.setSmsMessage,
       getAuthCollection: () => this.getAuthCollection(),
       twilioClient: this.twilioClient,
       twilioPhoneNumber: this.twilioPhoneNumber,
+    });
+  }
+
+  // Alias for "sendLoginCodeViaSms"
+  async sendLoginCode(phoneNumber) {
+    return this.sendLoginCodeViaSms(phoneNumber);
+  }
+
+  async sendLoginCodeViaCall(phoneNumber) {
+    return sendLoginCodeViaCall({
+      phoneNumber,
+      loginCodeLength: this.loginCodeLength,
+      getAuthCollection: () => this.getAuthCollection(),
+      twilioClient: this.twilioClient,
+      twilioPhoneNumber: this.twilioPhoneNumber,
+      callUrl: this.callUrl,
     });
   }
 
