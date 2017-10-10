@@ -1,6 +1,6 @@
 import { MongoClient } from 'mongodb';
 import Twilio from 'twilio';
-import getMiddleware from './getMiddleware';
+import getAuthMiddleware from './getAuthMiddleware';
 import sendLoginCodeViaCall from './sendLoginCodeViaCall';
 import sendLoginCodeViaSms from './sendLoginCodeViaSms';
 import usePassportStrategy from './usePassportStrategy';
@@ -42,8 +42,15 @@ class JwtMongoSms {
     });
   }
 
+  getAuthMiddleware() {
+    return getAuthMiddleware(this.requestKey);
+  }
+
   getMiddleware() {
-    return getMiddleware(this.requestKey);
+    // eslint-disable-next-line no-console
+    console.warn('"getMiddleware" is deprecated. Please use "getAuthMiddleware" instead.');
+
+    return this.getAuthMiddleware();
   }
 
   async getMongoCollection(name) {

@@ -1,6 +1,6 @@
 import passport from 'passport';
 
-const getMiddleware = (requestKey) => {
+const getAuthMiddleware = (requestKey) => {
   const authenticate = (request, response, next) => {
     passport.authenticate('jwt', { session: false }, (error, user) => {
       if (user) {
@@ -14,4 +14,4 @@ const getMiddleware = (requestKey) => {
   return [passport.initialize(), authenticate];
 };
 
-export default getMiddleware;
+export default getAuthMiddleware;
