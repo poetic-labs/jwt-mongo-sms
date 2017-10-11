@@ -1,8 +1,8 @@
 const generateAuthCode = authCodeLength => (
-  [...Array(authCodeLength)].reduce((code) => {
+  [...Array(authCodeLength)].reduce((authCode) => {
     const nextDigit = String(Math.floor(Math.random() * 10));
 
-    return code + nextDigit;
+    return authCode + nextDigit;
   }, '')
 );
 

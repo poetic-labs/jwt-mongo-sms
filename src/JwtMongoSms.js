@@ -16,7 +16,7 @@ class JwtMongoSms {
       authToken: undefined,
     },
     callUrl,
-    setSmsMessage = (code => `Your authentication code is ${code}`),
+    setSmsMessage = (authCode => `Your authentication code is ${authCode}`),
     usersCollectionName = 'users',
     authCollectionName = 'users',
     requestKey = 'user',

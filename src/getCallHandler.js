@@ -1,7 +1,7 @@
 import twilio from 'twilio';
 
-const defaultSetCallMessage = code => (
-  `Your authentication code is ${code}. Again, your authentication code is ${code}`
+const defaultSetCallMessage = authCode => (
+  `Your authentication code is ${authCode}. Again, your authentication code is ${authCode}`
 );
 
 const getCallHandler = (setCallMessage = defaultSetCallMessage) => (

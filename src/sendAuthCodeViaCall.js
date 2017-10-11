@@ -9,18 +9,18 @@ const sendAuthCodeViaCall = async ({
   twilioPhoneNumber,
   callUrl,
 }) => {
-  const code = generateAuthCode(authCodeLength);
+  const authCode = generateAuthCode(authCodeLength);
 
   await upsertAuth({
     phoneNumber,
-    code,
+    authCode,
     getAuthCollection,
   });
 
   await twilioClient.calls.create({
     to: phoneNumber,
     from: twilioPhoneNumber,
-    url: `${callUrl}/?authCode=${code}`,
+    url: `${callUrl}/?authCode=${authCode}`,
   });
 };
 
