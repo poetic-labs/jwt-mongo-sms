@@ -4,7 +4,7 @@ const defaultSetCallMessage = authCode => (
   `Your authentication code is ${authCode}. Again, your authentication code is ${authCode}`
 );
 
-const getCallHandler = (setCallMessage = defaultSetCallMessage) => (
+const getAuthCallHandler = (setCallMessage = defaultSetCallMessage) => (
   (request, response) => {
     const voiceResponse = new twilio.twiml.VoiceResponse();
 
@@ -22,4 +22,4 @@ const getCallHandler = (setCallMessage = defaultSetCallMessage) => (
   }
 );
 
-export default getCallHandler;
+export default getAuthCallHandler;

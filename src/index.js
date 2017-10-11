@@ -1,8 +1,8 @@
 import 'babel-polyfill';
 import JwtMongoSms from './JwtMongoSms';
-import getCallHandler from './getCallHandler';
+import getAuthCallHandler from './getAuthCallHandler';
 
 export { JwtMongoSms };
-export { getCallHandler };
+export { getAuthCallHandler };
 
 export default JwtMongoSms;
