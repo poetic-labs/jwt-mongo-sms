@@ -154,7 +154,7 @@ authCodeTimeoutSeconds|600|Number of seconds it takes for a authentication code 
 
 ## API
 
-There are three methods from the `JwtMongoSms` class you should use:
+The following are methods from the `JwtMongoSms` class you can use (from an instantiated object):
 
 ```
 getAuthMiddleware() : express.Handler[]
@@ -173,3 +173,10 @@ verifyAuthCode({ phoneNumber: string, authCode: string }) : Promise<{ user: Obje
 ```
 
 * Verifies inputted authentication code. Will throw errors if no auth data is found, no code has been generated, the compared codes do not match, or if the code has expired. When verified, the found `user` document and a generated `authToken` are returned.
+
+```
+createAuthIndex(fieldOrSpec: string = 'phoneNumber', IndexOptions: object = { unique: true }): Promise<string>
+createUsersIndex(fieldOrSpec: string = 'phoneNumber', IndexOptions: object = { unique: true }): Promise<string>
+```
+
+* Indexes the auth and users collections. Defaults to a unique index on `phoneNumber` for faster lookup and data integrity. See the [MongoDB documentation](http://mongodb.github.io/node-mongodb-native/2.1/api/Collection.html#createIndex) for more info on `fieldOrSpec` and `options`.
