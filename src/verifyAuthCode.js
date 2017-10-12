@@ -19,15 +19,15 @@ const verifyAuthCode = async ({
     throw new Error(`No authentication info found for ${phoneNumber}`);
   }
 
-  if (!auth.code) {
+  if (!auth.authCode) {
     throw new Error(`No code has been generated for ${phoneNumber}`);
   }
 
-  if (auth.code !== authCode) {
+  if (auth.authCode !== authCode) {
     throw new Error('Code does not match');
   }
 
-  if (moment().diff(moment(auth.codeCreatedAt), 'seconds') >= authCodeTimeoutSeconds) {
+  if (moment().diff(moment(auth.authCodeCreatedAt), 'seconds') >= authCodeTimeoutSeconds) {
     throw new Error('Code has expired');
   }
 
