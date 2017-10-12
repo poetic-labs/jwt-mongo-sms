@@ -2,7 +2,7 @@
 
 If you're wondering how to implement authentication with JSON web tokens, Mongo DB, Twilio SMS, and (optionally) GraphQL, you're in the right place!
 
-NOTE: This package is new and continually changing. Be sure to check the docs before upgrading to a new version.
+NOTE: This package is new and continually changing. If you experience bugs, please upgrade to the latest version and check the docs for changes.
 
 ## Installation
 
