@@ -145,12 +145,14 @@ Field|Default Value|Description
 jwtSecret||JSON web token [secret](https://jwt.io/introduction/)
 mongoUri||[Mongo](https://www.mongodb.com/) URI (e.g., `mongodb://localhost/my-db`)
 twilio|`{}`|[Twilio](https://www.twilio.com/) credentials (`accountSid`, `authToken`) and `phoneNumber` used to send SMS text
-setSmsMessage|```(code => `Your authentication code is ${code}`)```|Function used to set the message for SMS authentication
+setSmsMessage|```(authCode => `Your authentication code is ${authCode}`)```|Used to set the message for SMS authentication
 usersCollectionName|users|Name of the Mongo collection used to store user data
 authCollectionName|users|Name of the Mongo collection used to store auth data
 requestKey|user|Key your authenticated user will be assigned to on each server `request`
 authCodeLength|4|Length of authentication code
 authCodeTimeoutSeconds|600|Number of seconds it takes for a authentication code to expire
+encodeUserId|```(userId => userId)```|Called when the JWT is generated (after the auth code is verified). Change this only if you need to format the encoded user id
+decodeUserId|```(userId => ObjectId.createFromHexString(userId))```|Called when the auth middleware decodes the JWT payload. If your user ids are stored as strings instead of ObjectIds (e.g., Meteor), you should replace this with `(userId => userId)`
 
 ## API
 
