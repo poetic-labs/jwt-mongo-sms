@@ -1,8 +1,7 @@
-import { ObjectId } from 'mongodb';
 import passport from 'passport';
 import { Strategy, ExtractJwt } from 'passport-jwt';
 
-const usePassportStrategy = ({ jwtSecret, getUsersCollection }) => {
+const usePassportStrategy = ({ jwtSecret, getUsersCollection, decodeUserId }) => {
   const strategy = new Strategy(
     {
       jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme('jwt'),
@@ -17,7 +16,7 @@ const usePassportStrategy = ({ jwtSecret, getUsersCollection }) => {
 
           user = await usersCollection.findOne({
             // eslint-disable-next-line no-underscore-dangle
-            _id: ObjectId.createFromHexString(jwtPayload._id),
+            _id: decodeUserId(jwtPayload._id),
           });
         }
 

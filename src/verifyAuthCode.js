@@ -8,6 +8,7 @@ const verifyAuthCode = async ({
   getAuthCollection,
   authCodeTimeoutSeconds,
   jwtSecret,
+  encodeUserId,
 }) => {
   const usersCollection = await getUsersCollection();
   const authCollection = await getAuthCollection();
@@ -32,7 +33,7 @@ const verifyAuthCode = async ({
   }
 
   // eslint-disable-next-line no-underscore-dangle
-  const authToken = jwt.encode({ _id: user._id }, jwtSecret);
+  const authToken = jwt.encode({ _id: encodeUserId(user._id) }, jwtSecret);
 
   return { user, authToken };
 };

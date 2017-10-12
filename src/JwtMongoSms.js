@@ -1,4 +1,4 @@
-import { MongoClient } from 'mongodb';
+import { MongoClient, ObjectId } from 'mongodb';
 import Twilio from 'twilio';
 import getAuthMiddleware from './getAuthMiddleware';
 import sendAuthCodeViaCall from './sendAuthCodeViaCall';
@@ -22,6 +22,8 @@ class JwtMongoSms {
     requestKey = 'user',
     authCodeLength = 4,
     authCodeTimeoutSeconds = (60 * 10),
+    encodeUserId = (userId => userId),
+    decodeUserId = (userId => ObjectId.createFromHexString(userId)),
   }) {
     this.jwtSecret = jwtSecret;
     this.mongoUri = mongoUri;
@@ -35,10 +37,13 @@ class JwtMongoSms {
     this.requestKey = requestKey;
     this.authCodeLength = authCodeLength;
     this.authCodeTimeoutSeconds = authCodeTimeoutSeconds;
+    this.encodeUserId = encodeUserId;
+    this.decodeUserId = decodeUserId;
 
     usePassportStrategy({
       jwtSecret,
       getUsersCollection: () => this.getUsersCollection(),
+      decodeUserId: userId => this.decodeUserId(userId),
     });
   }
 
@@ -109,6 +114,7 @@ class JwtMongoSms {
       getAuthCollection: () => this.getAuthCollection(),
       authCodeTimeoutSeconds: this.authCodeTimeoutSeconds,
       jwtSecret: this.jwtSecret,
+      encodeUserId: userId => this.encodeUserId(userId),
     });
   }
 }
