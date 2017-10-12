@@ -9,12 +9,12 @@ const sendAuthCodeViaSms = async ({
   twilioClient,
   twilioPhoneNumber,
 }) => {
-  const code = generateAuthCode(authCodeLength);
-  const message = setMessage(code);
+  const authCode = generateAuthCode(authCodeLength);
+  const message = setMessage(authCode);
 
   await upsertAuth({
     phoneNumber,
-    code,
+    authCode,
     getAuthCollection,
   });
 
