@@ -1,4 +1,5 @@
 yarn-debug.log*
 yarn-error.log*
 build/
+docs/
 node_modules/
