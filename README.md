@@ -2,17 +2,17 @@
 
 If you're wondering how to implement authentication with JSON web tokens, Mongo DB, Twilio SMS, and (optionally) GraphQL, you're in the right place!
 
-NOTE: This package is new and continually changing. If you experience bugs, please upgrade to the latest version and check the docs for changes.
+DISCLAIMER: This package is new and continually changing. We made this specifically for our team, but it's getting more installations than anticipated. If you experience bugs, please upgrade to the latest version and check the docs for changes. You can also post an issue on GitHub!
 
 ## Installation
 
-```
+```sh
 npm install jwt-mongo-sms
 ```
 
 or
 
-```
+```sh
 yarn add jwt-mongo-sms
 ```
 
@@ -48,93 +48,20 @@ export default jwtMongoSms;
 Add the middleware to your server:
 ```javascript
 import express from 'express';
-import jwtMongoSms from './jwtMongoSms';
+import jwtMongoSms from './jwtMongoSms'; // from wherever you instantiated JwtMongoSms
 
 const server = express();
 
 server.use(jwtMongoSms.getAuthMiddleware());
 ```
 
-With the middleware you can check `request.user` in each request to determine which user (if any) has been authenticated!
+Using this middleware and the `sendAuthCode` and `verifyAuthCode` methods (see [API](#api) and [Examples](#examples) below), you can check `request.user` in each server request to determine which user (if any) has been authenticated!
 
-You will need to store the JWT on the client using `localStorage`, cookies, or another method, and send it via the request `Authorization` header. See the GraphQL samples below.
+NOTE: You will need to store the JSON web token on the client using `localStorage`, cookies, or another method, and send it via the request `Authorization` header. (See the GraphQL example below.)
 
-## GraphQL usage
+## Examples
 
-Sample login resolvers:
-```javascript
-const sendAuthCode = async (obj, { phoneNumber }) => {
-  await jwtMongoSms.sendAuthCode(phoneNumber);
-
-  return true;
-};
-
-const verifyAuthCode = async (obj, { phoneNumber, authCode }) => {
-  const { user, authToken } = await jwtMongoSms.verifyAuthCode({ phoneNumber, authCode });
-
-  return { user, authToken };
-};
-```
-
-Sample auth token storage on client with [Apollo](https://www.npmjs.com/package/apollo-client):
-```javascript
-apolloClient.mutate({
-  mutation: gql`
-    mutation verifyAuthCode($phoneNumber: String!, $authCode: String!) {
-      verifyAuthCode(phoneNumber: $phoneNumber, authCode: $authCode) {
-        authToken
-      }
-    }
-  `,
-  variables: {
-    phoneNumber: '+15555555555',
-    authCode: '1234',
-  },
-})
-  .then(({ data }) => {
-    localStorage.setItem('authToken', data.verifyAuthCode.authToken);
-  })
-```
-
-Sample Apollo middleware that makes authorized requests:
-```javascript
-networkInterface.use([{
-  applyMiddleware(request, next) {
-    const authToken = localStorage.getItem('authToken');
-
-    if (!request.options.headers) {
-      request.options.headers = {};
-    }
-
-    if (authToken) {
-      request.options.headers.authorization = `JWT ${authToken}`;
-    }
-
-    next();
-  },
-}]);
-```
-
-Setting context for resolvers that require authentication:
-```javascript
-server.use('/graphql', bodyParser.json(), graphqlExpress((request) => ({
-  schema,
-  context: {
-    user: request.user, // Configure this key with "requestKey" (defaults to "user")
-  },
-})));
-```
-
-Sample query resolver with authentication:
-```javascript
-const guardedResolver = (obj, args, { user }) => {
-  if (!user) { // If empty, the user was not authenticated
-    throw new GraphQLError('Unauthorized');
-  }
-
-  return SensitiveUserData.findOne({ userId: user._id });
-};
-```
+[GraphQL](docs/graphql.md)
 
 ## Configuration
 
@@ -151,8 +78,7 @@ authCollectionName|users|Name of the Mongo collection used to store auth data
 requestKey|user|Key your authenticated user will be assigned to on each server `request`
 authCodeLength|4|Length of authentication code
 authCodeTimeoutSeconds|600|Number of seconds it takes for a authentication code to expire
-encodeUserId|```(userId => userId)```|Called when the JWT is generated (after the auth code is verified). Change this only if you need to format the encoded user id
-decodeUserId|```(userId => ObjectId.createFromHexString(userId))```|Called when the auth middleware decodes the JWT payload. If your user ids are stored as strings instead of ObjectIds (e.g., Meteor), you should replace this with `(userId => userId)`
+decodeUserId|```(userId => ObjectId.createFromHexString(userId))```|Determines the format of `_id` for the auth middleware user query. If your user ids are stored as strings instead of ObjectIds (e.g., Meteor), you should replace this with `(userId) => userId)`
 
 ## API
 
@@ -165,7 +91,7 @@ getAuthMiddleware() : express.Handler[]
 * Returns the middleware needed for authenticating server requests.
 
 ```
-sendAuthCode(phoneNumber: string) : Promise<void>
+sendAuthCode(phoneNumber: string) : Promise<boolean>
 ```
 
 * Sends authentication code via Twilio SMS. Upserts auth collection document for `phoneNumber` with new `authCode` and `authCodeCreatedAt`. NOTE: By default `userCollectionName` and `authCollectionName` are both set to `users`. That means if you don't override these settings, this method will insert a user document for you (if it doesn't already exist). To avoid this behavior, be sure to create the user document beforehand.
@@ -181,4 +107,4 @@ createAuthIndex(fieldOrSpec: string = 'phoneNumber', IndexOptions: object = { un
 createUsersIndex(fieldOrSpec: string = 'phoneNumber', IndexOptions: object = { unique: true }): Promise<string>
 ```
 
-* Indexes the auth and users collections. Defaults to a unique index on `phoneNumber` for faster lookup and data integrity. See the [MongoDB documentation](http://mongodb.github.io/node-mongodb-native/2.1/api/Collection.html#createIndex) for more info on `fieldOrSpec` and `options`.
+* Indexes the auth and users collections respectively. Each defaults to a unique index on `phoneNumber` for faster lookup and data integrity. See the [MongoDB documentation](http://mongodb.github.io/node-mongodb-native/2.1/api/Collection.html#createIndex) for more info on `fieldOrSpec` and `options`.
