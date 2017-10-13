@@ -23,6 +23,8 @@ const sendAuthCodeViaSms = async ({
     body: message,
     from: twilioPhoneNumber,
   });
+
+  return true;
 };
 
 export default sendAuthCodeViaSms;

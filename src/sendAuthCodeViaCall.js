@@ -22,6 +22,8 @@ const sendAuthCodeViaCall = async ({
     from: twilioPhoneNumber,
     url: `${callUrl}/?authCode=${authCode}`,
   });
+
+  return true;
 };
 
 export default sendAuthCodeViaCall;
