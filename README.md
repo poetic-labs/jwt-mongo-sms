@@ -2,8 +2,6 @@
 
 If you're wondering how to implement authentication with JSON web tokens, Mongo DB, Twilio SMS, and (optionally) GraphQL, you're in the right place!
 
-DISCLAIMER: This package is new and continually changing. We made this specifically for our team, but it's getting more installations than anticipated. If you experience bugs, please upgrade to the latest version and check the docs for changes. You can also post an issue on GitHub!
-
 ## Installation
 
 ```sh
@@ -108,3 +106,7 @@ createUsersIndex(fieldOrSpec: string = 'phoneNumber', IndexOptions: object = { u
 ```
 
 * Indexes the auth and users collections respectively. Each defaults to a unique index on `phoneNumber` for faster lookup and data integrity. See the [MongoDB documentation](http://mongodb.github.io/node-mongodb-native/2.1/api/Collection.html#createIndex) for more info on `fieldOrSpec` and `options`.
+
+## Issues
+
+If you experience bugs, try upgrading to the latest version and checking the [changelog](CHANGELOG.md). You can also post an issue on GitHub!
