@@ -1,10 +1,12 @@
 import twilio from 'twilio';
 
-const defaultSetCallMessage = authCode => (
-  `Your authentication code is ${authCode}. Again, your authentication code is ${authCode}`
-);
+const defaultVoiceResponseHandler = (voiceResponse, authCode) => {
+  const message = `Your authentication code is ${authCode}. Again, your authentication code is ${authCode}`;
 
-const getAuthCallHandler = (setCallMessage = defaultSetCallMessage) => (
+  voiceResponse.say(message);
+};
+
+const getAuthCallHandler = (handleVoiceResponse = defaultVoiceResponseHandler) => (
   (request, response) => {
     const voiceResponse = new twilio.twiml.VoiceResponse();
 
@@ -12,7 +14,7 @@ const getAuthCallHandler = (setCallMessage = defaultSetCallMessage) => (
       const { authCode } = request.query;
       const spacedAuthCode = authCode.split('').join(' ');
 
-      voiceResponse.say(setCallMessage(spacedAuthCode));
+      handleVoiceResponse(voiceResponse, spacedAuthCode);
     } catch (error) {
       voiceResponse.hangup();
     }
