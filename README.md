@@ -43,19 +43,50 @@ const jwtMongoSms = new JwtMongoSms({
 export default jwtMongoSms;
 ```
 
-Add the middleware to your server:
+Set up REST endpoints to send and verify authentication code (for GraphQL, see [Examples](#examples) below):
 ```javascript
+import bodyParser from 'body-parser';
 import express from 'express';
 import jwtMongoSms from './jwtMongoSms'; // from wherever you instantiated JwtMongoSms
 
-const server = express();
+const app = express();
 
-server.use(jwtMongoSms.getAuthMiddleware());
+// Parses request body as object
+app.use(bodyParser.urlencoded());
+
+// Sample route that sends authentication code via SMS
+app.post('/send-auth-code', (request, response) => {
+  const { phoneNumber } = request.body;
+
+  jwtMongoSms.sendAuthCode(phoneNumber);
+
+  response.end();
+});
+
+// Sample route that verifies authentication code (on success, returns a JSON web token and user data)
+app.post('/verify-auth-code', async (request, response) => {
+  const { phoneNumber, authCode } = request.body;
+  const { authToken, user } = await jwtMongoSms.verifyAuthCode({ phoneNumber, authCode });
+
+  response.json({ authToken, user });
+});
+
+// Authenticates each server request by checking for a JSON web token in the "Authorization" header
+app.use(jwtMongoSms.getAuthMiddleware());
+
+// Sample authenticated route
+app.get('/profile', (request, response) => {
+  if (request.user) {
+    res.status(200).send('Authenticated!');
+  } else {
+    res.status(401).send('Unauthorized!');
+  }
+});
 ```
 
-Using this middleware and the `sendAuthCode` and `verifyAuthCode` methods (see [API](#api) and [Examples](#examples) below), you can check `request.user` in each server request to determine which user (if any) has been authenticated!
+Once an authentication code is verified, the client will receive a JSON web token. To make authenticated requests, you will need to store this token on the client (using `localStorage`, cookies, or any other preferred method) and send it via the request `Authorization` header. If your JSON web token were `abc123`, for instance, the header value would be `JWT abc123`. (For more details, see the [GraphQL example](#examples) below.)
 
-NOTE: You will need to store the JSON web token on the client using `localStorage`, cookies, or another method, and send it via the request `Authorization` header. (See the GraphQL example below.)
+Finally, with the middleware in place, you can check `request.user` in any subsequent server request to determine which user (if any) has been authenticated!
 
 ## Examples
 
