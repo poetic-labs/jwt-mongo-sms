@@ -2,5 +2,5 @@
   "presets": [
     "env"
   ],
-  "plugins": ["transform-async-generator-functions"]
+  "plugins": ["transform-runtime"]
 }

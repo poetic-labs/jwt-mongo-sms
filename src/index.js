@@ -1,4 +1,3 @@
-import 'babel-polyfill';
 import JwtMongoSms from './JwtMongoSms';
 import getAuthCallHandler from './getAuthCallHandler';
 
