@@ -11,12 +11,19 @@ const verifyAuthCode = async ({
   jwtSecret,
   phoneNumber,
 }) => {
+  const usersCollection = await getUsersCollection();
+  const user = await usersCollection.findOne({ phoneNumber });
+
+  if (!user) {
+    throw new Error(`No user data found for ${phoneNumber}`);
+  }
+
   if (!isWhitelisted) {
     const authCollection = await getAuthCollection();
     const auth = await authCollection.findOne({ phoneNumber });
 
     if (!auth) {
-      throw new Error(`No authentication info found for ${phoneNumber}`);
+      throw new Error(`No authentication data found for ${phoneNumber}`);
     }
 
     if (!auth.authCode) {
@@ -31,9 +38,6 @@ const verifyAuthCode = async ({
       throw new Error('Code does not match');
     }
   }
-
-  const usersCollection = await getUsersCollection();
-  const user = await usersCollection.findOne({ phoneNumber });
 
   // eslint-disable-next-line no-underscore-dangle
   const authToken = jwt.encode({ _id: encodeUserId(user._id) }, jwtSecret);
