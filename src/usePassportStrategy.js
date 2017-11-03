@@ -1,7 +1,7 @@
 import passport from 'passport';
 import { Strategy, ExtractJwt } from 'passport-jwt';
 
-const usePassportStrategy = ({ jwtSecret, getUsersCollection, decodeUserId }) => {
+const usePassportStrategy = ({ decodeUserId, getUsersCollection, jwtSecret }) => {
   const strategy = new Strategy(
     {
       jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme('jwt'),

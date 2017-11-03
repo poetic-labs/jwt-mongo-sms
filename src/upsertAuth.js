@@ -1,9 +1,9 @@
 import moment from 'moment';
 
 const upsertAuth = async ({
-  phoneNumber,
   authCode,
   getAuthCollection,
+  phoneNumber,
 }) => {
   const authCollection = await getAuthCollection();
 
