@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [2.4.3] - 2017-11-03
+## [2.4.0] - 2017-11-03
 ### Added
 - Add `whitelistedPhoneNumber` as configuration option in `JwtMongoSms`
 
