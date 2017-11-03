@@ -2,12 +2,13 @@ import generateAuthCode from './generateAuthCode';
 import upsertAuth from './upsertAuth';
 
 const sendAuthCodeViaCall = async ({
-  phoneNumber,
   authCodeLength,
+  callUrl,
   getAuthCollection,
+  isWhitelisted,
+  phoneNumber,
   twilioClient,
   twilioPhoneNumber,
-  callUrl,
 }) => {
   const authCode = generateAuthCode(authCodeLength);
 
@@ -17,11 +18,13 @@ const sendAuthCodeViaCall = async ({
     getAuthCollection,
   });
 
-  await twilioClient.calls.create({
-    to: phoneNumber,
-    from: twilioPhoneNumber,
-    url: `${callUrl}/?authCode=${authCode}`,
-  });
+  if (!isWhitelisted) {
+    await twilioClient.calls.create({
+      to: phoneNumber,
+      from: twilioPhoneNumber,
+      url: `${callUrl}/?authCode=${authCode}`,
+    });
+  }
 
   return true;
 };

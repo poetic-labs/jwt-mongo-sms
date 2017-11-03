@@ -2,10 +2,11 @@ import generateAuthCode from './generateAuthCode';
 import upsertAuth from './upsertAuth';
 
 const sendAuthCodeViaSms = async ({
-  phoneNumber,
   authCodeLength,
-  setMessage,
   getAuthCollection,
+  isWhitelisted,
+  phoneNumber,
+  setMessage,
   twilioClient,
   twilioPhoneNumber,
 }) => {
@@ -18,11 +19,13 @@ const sendAuthCodeViaSms = async ({
     getAuthCollection,
   });
 
-  await twilioClient.messages.create({
-    to: phoneNumber,
-    body: message,
-    from: twilioPhoneNumber,
-  });
+  if (!isWhitelisted) {
+    await twilioClient.messages.create({
+      to: phoneNumber,
+      body: message,
+      from: twilioPhoneNumber,
+    });
+  }
 
   return true;
 };
