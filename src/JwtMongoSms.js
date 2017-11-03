@@ -24,6 +24,7 @@ class JwtMongoSms {
     authCodeTimeoutSeconds = (60 * 10),
     encodeUserId = (userId => userId),
     decodeUserId = (userId => ObjectId.createFromHexString(userId)),
+    whitelistedPhoneNumber,
   }) {
     this.jwtSecret = jwtSecret;
     this.mongoUri = mongoUri;
@@ -39,11 +40,12 @@ class JwtMongoSms {
     this.authCodeTimeoutSeconds = authCodeTimeoutSeconds;
     this.encodeUserId = encodeUserId;
     this.decodeUserId = decodeUserId;
+    this.whitelistedPhoneNumber = whitelistedPhoneNumber;
 
     usePassportStrategy({
       jwtSecret,
-      getUsersCollection: () => this.getUsersCollection(),
       decodeUserId: userId => this.decodeUserId(userId),
+      getUsersCollection: () => this.getUsersCollection(),
     });
   }
 
@@ -83,8 +85,9 @@ class JwtMongoSms {
     return sendAuthCodeViaSms({
       phoneNumber,
       authCodeLength: this.authCodeLength,
-      setMessage: this.setSmsMessage,
       getAuthCollection: () => this.getAuthCollection(),
+      isWhitelisted: this.isWhitelisted(phoneNumber),
+      setMessage: this.setSmsMessage,
       twilioClient: this.twilioClient,
       twilioPhoneNumber: this.twilioPhoneNumber,
     });
@@ -99,10 +102,11 @@ class JwtMongoSms {
     return sendAuthCodeViaCall({
       phoneNumber,
       authCodeLength: this.authCodeLength,
+      callUrl: this.callUrl,
       getAuthCollection: () => this.getAuthCollection(),
+      isWhitelisted: this.isWhitelisted(phoneNumber),
       twilioClient: this.twilioClient,
       twilioPhoneNumber: this.twilioPhoneNumber,
-      callUrl: this.callUrl,
     });
   }
 
@@ -110,12 +114,18 @@ class JwtMongoSms {
     return verifyAuthCode({
       authCode,
       phoneNumber,
+      authCodeTimeoutSeconds: this.authCodeTimeoutSeconds,
+      encodeUserId: userId => this.encodeUserId(userId),
       getUsersCollection: () => this.getUsersCollection(),
       getAuthCollection: () => this.getAuthCollection(),
-      authCodeTimeoutSeconds: this.authCodeTimeoutSeconds,
+      isWhitelisted: this.isWhitelisted(phoneNumber),
       jwtSecret: this.jwtSecret,
-      encodeUserId: userId => this.encodeUserId(userId),
     });
+  }
+
+  isWhitelisted(phoneNumber) {
+    return (this.whitelistedPhoneNumber && phoneNumber) &&
+           (this.whitelistedPhoneNumber === phoneNumber);
   }
 }
 
