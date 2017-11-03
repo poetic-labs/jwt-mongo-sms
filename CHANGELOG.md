@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.4.3] - 2017-11-03
+### Added
+- Add `whitelistedPhoneNumber` as configuration option in `JwtMongoSms`
+
 ## [2.3.3] - 2017-10-23
 ### Fixed
 - Turn async functions into ES2015 generators with `babel-plugin-transform-runtime`
