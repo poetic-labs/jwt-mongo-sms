@@ -58,6 +58,10 @@ app.use(bodyParser.urlencoded());
 app.post('/send-auth-code', (request, response) => {
   const { phoneNumber } = request.body;
 
+  // This is a good spot to create your own user with "phoneNumber" if they don't already exist
+  // Alternatively, if your user collection and auth collection are the same, the function below
+  // will upsert a user/auth document with "phoneNumber", "authCode", and "authCodeCreatedAt"
+
   jwtMongoSms.sendAuthCode(phoneNumber);
 
   response.end();
@@ -108,6 +112,7 @@ requestKey|user|Key your authenticated user will be assigned to on each server `
 authCodeLength|4|Length of authentication code
 authCodeTimeoutSeconds|600|Number of seconds it takes for a authentication code to expire
 decodeUserId|```(userId => ObjectId.createFromHexString(userId))```|Determines the format of `_id` for the auth middleware user query. If your user ids are stored as strings instead of ObjectIds (e.g., Meteor), you should replace this with `(userId) => userId)`
+whitelistedPhoneNumber||Use this phone number for testing a "happy path". No text will be sent via `sendAuthCode` (so fake phone numbers will work), and any auth code submitted via `verifyAuthCode` will be considered a match
 
 ## API
 
