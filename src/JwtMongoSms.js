@@ -124,8 +124,13 @@ class JwtMongoSms {
   }
 
   isWhitelisted(phoneNumber) {
-    return (this.whitelistedPhoneNumber && phoneNumber) &&
-           (this.whitelistedPhoneNumber === phoneNumber);
+    if ((this.whitelistedPhoneNumber && phoneNumber) &&
+        (this.whitelistedPhoneNumber === phoneNumber)
+    ) {
+      return true;
+    }
+
+    return false;
   }
 }
 
