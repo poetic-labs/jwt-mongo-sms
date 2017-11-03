@@ -1,6 +1,6 @@
 {
   "name": "jwt-mongo-sms",
-  "version": "2.3.3",
+  "version": "2.4.0",
   "description": "Authentication using JSON web tokens, Mongo DB, and Twilio SMS",
   "license": "ISC",
   "author": "Poetic Systems",
